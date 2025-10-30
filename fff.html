@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>গ্যাস সূত্র - প্রশ্ন ও উত্তর</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .search-box {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        .qa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .qa-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .qa-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .question {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .answer {
+            font-size: 1em;
+            color: #4a5568;
+            line-height: 1.6;
+            padding: 12px;
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-tab {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            color: #718096;
+            font-size: 1.2em;
+        }
+        
+        @media (max-width: 768px) {
+            .qa-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 গ্যাস সূত্র</h1>
+            <p>প্রশ্ন ও উত্তর সমাধান</p>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 প্রশ্ন খুঁজুন...">
+        </div>
+        
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">সব প্রশ্ন</button>
+            <button class="category-tab" data-category="boyle">বয়েল সূত্র</button>
+            <button class="category-tab" data-category="charles">চার্লস সূত্র</button>
+            <button class="category-tab" data-category="temp">তাপমাত্রা</button>
+            <button class="category-tab" data-category="ideal">আদর্শ গ্যাস</button>
+            <button class="category-tab" data-category="stp">STP</button>
+        </div>
+        
+        <div class="qa-grid" id="qaGrid"></div>
+        <div class="no-results" id="noResults" style="display: none;">
+            কোনো ফলাফল পাওয়া যায়নি
+        </div>
+    </div>
+
+    <script>
+        const qaData = [
+            {q: "বয়েলের সূত্রে ধ্রুবক কী কী?", a: "তাপমাত্রা (T) এবং গ্যাসের ভর/মোল সংখ্যা (n)", cat: "boyle"},
+            {q: "বয়েল ও চার্লসের সূত্র দুটিতেই যে ভৌতরাশিকে ধ্রুবক ধরা হয়, তার নাম লেখো।", a: "গ্যাসের ভর বা মোল সংখ্যা (n)", cat: "boyle"},
+            {q: "স্থির চাপে কত ডিগ্রি সেলসিয়াস উয়তায় চার্লসের সূত্র অনুসারে কোনো আদর্শ গ্যাসের আয়তন শূন্য হবে?", a: "-273°C বা -273.15°C", cat: "charles"},
+            {q: "চার্লসের সূত্রে ধ্রুবক কী কী?", a: "চাপ (P) এবং গ্যাসের ভর/মোল সংখ্যা (n)", cat: "charles"},
+            {q: "চার্লসের সূত্রের V-T লেখচিত্রের প্রকৃতি কী?", a: "সরলরেখা (যা -273°C বা 0K তে তাপমাত্রা অক্ষকে ছেদ করে)", cat: "charles"},
+            {q: "তাপমাত্রার পরম স্কেলে প্রমাণ চাপে জলের হিমাঙ্কের মান কত?", a: "273 K বা 273.15 K", cat: "temp"},
+            {q: "কেলভিন স্কেলে প্রমাণ চাপে জলের স্ফুটনাঙ্ক কত?", a: "373 K বা 373.15 K", cat: "temp"},
+            {q: "30°C এবং 300K-এর মধ্যে কোন্ তাপমাত্রাটি বেশি?", a: "30°C = 303K, তাই 30°C বেশি", cat: "temp"},
+            {q: "সেলসিয়াস স্কেলে পরমশূন্য উন্নতার মান কত?", a: "-273°C বা -273.15°C", cat: "temp"},
+            {q: "সেলসিয়াস স্কেলে দুটি বস্তুর উন্নতার পার্থক্য 10°C হলে, কেলভিন স্কেলে ওই উন্নতার পার্থক্য কত হবে?", a: "10 K (তাপমাত্রার পার্থক্য উভয় স্কেলে সমান)", cat: "temp"},
+            {q: "কেলভিন স্কেলে প্রমাণ তাপমাত্রার মান কত?", a: "273 K বা 273.15 K", cat: "temp"},
+            {q: "পরমশূন্য তাপমাত্রায় আদর্শ গ্যাসের আয়তন কত হবে?", a: "শূন্য (0)", cat: "ideal"},
+            {q: "প্রমাণ চাপের মান কত?", a: "1 atm = 101325 Pa = 760 mm Hg", cat: "ideal"},
+            {q: "327°C-কে কেলভিন স্কেলে প্রকাশ করো।", a: "327 + 273 = 600 K", cat: "temp"},
+            {q: "t° সেলসিয়াস তাপমাত্রাকে কেলভিন স্কেলে প্রকাশ করো।", a: "(t + 273) K বা (t + 273.15) K", cat: "temp"},
+            {q: "আদর্শ গ্যাসের অবস্থার সমীকরণটি লেখো।", a: "PV = nRT", cat: "ideal"},
+            {q: "SI-তে সর্বজনীন গ্যাস ধ্রুবক R-এর মান লেখো।", a: "R = 8.314 J mol⁻¹ K⁻¹", cat: "ideal"},
+            {q: "বোলৎজ‌ম্যান ধ্রুবক ও সর্বজনীন গ্যাস ধ্রুবকের মধ্যে সম্পর্ক লেখো।", a: "R = k × Nₐ (যেখানে k = বোলৎজম্যান ধ্রুবক, Nₐ = অ্যাভোগাড্রো সংখ্যা)", cat: "ideal"},
+            {q: "আদর্শ গ্যাসের অণুগুলির মধ্যেকার আকর্ষণ বলের মান কত?", a: "শূন্য (0)", cat: "ideal"},
+            {q: "গ্যাসের কোন্ ক্রিয়ার সাহায্যে গ্যাস অণুগুলির গতিশীলতা প্রমাণ করা যায়?", a: "ব্রাউনীয় গতি বা বিস্তরণ (Diffusion)", cat: "ideal"},
+            {q: "STP-তে কোনো গ্যাসের মোলার আয়তন কত?", a: "22.4 L mol⁻¹", cat: "stp"},
+            {q: "STP-তে কত গ্রাম N₂ গ্যাসের আয়তন ও চাপের গুণফল 224 L-atm?", a: "PV = 224 L-atm, STP-তে P = 1 atm, তাই V = 224 L = 10 mol, ভর = 10 × 28 = 280 g", cat: "stp"},
+            {q: "স্থির উন্নতায় বদ্ধপাত্রে একটি গ্যাস আছে। উন্নতা অপরিবর্তিত রেখে ওই গ্যাস আরও কিছু পরিমাণে ওই পাত্রে যোগ করা হল। গ্যাসের চাপের কী পরিবর্তন হবে?", a: "চাপ বৃদ্ধি পাবে (কারণ P ∝ n যখন V ও T স্থির)", cat: "ideal"},
+            {q: "R-এর মান L-atm-mol⁻¹-K⁻¹ এককে কত হবে?", a: "R = 0.0821 L atm mol⁻¹ K⁻¹", cat: "ideal"},
+            {q: "কোন্ শর্তে বাস্তব গ্যাস চার্লস ও বয়েলের সূত্র মেনে চলে?", a: "নিম্ন চাপ ও উচ্চ তাপমাত্রায়", cat: "ideal"},
+            {q: "SI-তে গ্যাসের চাপ-এর একক কী?", a: "Pascal (Pa) বা N m⁻²", cat: "ideal"},
+            {q: "PV = (W/M)RT সমীকরণটিতে M-এর একক কী?", a: "g mol⁻¹ (গ্রাম প্রতি মোল - আণবিক ভর)", cat: "ideal"},
+            {q: "একটি আদর্শ গ্যাসের অণুগুলির মোট স্থিতিশক্তির পরিমাণ কত?", a: "শূন্য (0) - আদর্শ গ্যাসে অণুর মধ্যে কোনো আন্তঃআণবিক বল নেই", cat: "ideal"},
+            {q: "কোনো চাপে নির্দিষ্ট ভরের কোনো গ্যাসের 0°C উয়তায় আয়তন V₀, চাপ অপরিবর্তিত রেখে গ্যাসটির উয়তা 1°C বৃদ্ধি করলে চার্লসের সূত্র অনুযায়ী গ্যাসটির আয়তন বৃদ্ধির পরিমাণ কত হবে?", a: "V₀/273 (চার্লসের সূত্র অনুযায়ী আয়তন সম্প্রসারণ গুণাঙ্ক = 1/273)", cat: "charles"},
+            {q: "STP-তে 1L H₂ গ্যাসে ও 4L CO₂ গ্যাসে উপস্থিত অণুর সংখ্যার অনুপাত কত হবে?", a: "1:4 (অ্যাভোগাড্রো সূত্র অনুযায়ী সমান তাপমাত্রা ও চাপে আয়তনের অনুপাত = অণু সংখ্যার অনুপাত)", cat: "stp"}
+        ];
+
+        let currentCategory = 'all';
+        let filteredData = qaData;
+
+        function renderCards(data) {
+            const grid = document.getElementById('qaGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (data.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            noResults.style.display = 'none';
+            
+            grid.innerHTML = data.map((item, index) => `
+                <div class="qa-card">
+                    <span class="question-number">প্রশ্ন ${index + 1}</span>
+                    <div class="question">${item.q}</div>
+                    <div class="answer">${item.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            if (category === 'all') {
+                filteredData = qaData;
+            } else {
+                filteredData = qaData.filter(item => item.cat === category);
+            }
+            renderCards(filteredData);
+        }
+
+        function searchQuestions(query) {
+            const searchTerm = query.toLowerCase();
+            const results = filteredData.filter(item => 
+                item.q.toLowerCase().includes(searchTerm) || 
+                item.a.toLowerCase().includes(searchTerm)
+            );
+            renderCards(results);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuestions(e.target.value);
+        });
+
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                filterByCategory(e.target.dataset.category);
+                document.getElementById('searchInput').value = '';
+            });
+        });
+
+        renderCards(qaData);
+    </script>
+</body>
+</html>
